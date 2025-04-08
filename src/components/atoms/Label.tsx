@@ -1,6 +1,11 @@
-const Label = (props:{ children: React.ReactNode}) => {
+const Label = (props:{ 
+    children: React.ReactNode,
+    className?: string 
+}) => {
     return (
-        <label>
+        <label
+            className={props.className}
+        >
             {props.children}
         </label>
     )

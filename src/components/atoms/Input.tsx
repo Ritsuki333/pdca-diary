@@ -3,6 +3,7 @@ const Input = (props: {
     type: string,
     placeholder?: string,
     value?: string,
+    className?: string,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
     
  }) => {
@@ -12,6 +13,8 @@ const Input = (props: {
             placeholder={props.placeholder}
             value={props.value}
             onChange={props.onChange}
+            className={props.className}
+
         />
     )
 
