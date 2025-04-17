@@ -61,6 +61,8 @@ const LoginForm = () => {
         }
 
         if (!hasError) {
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("userEmail", email);
             navigate("/top");
         }
     }
@@ -71,7 +73,11 @@ const LoginForm = () => {
     return(
         <div className="flex justify-center items-center h-screen bg-gray-50">
             <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-                <h1>ログインページ</h1>
+                {/* ログインページのタイトル */}
+                <h1
+                    className="text-sm font-medium text-gray-700 block mb-1 text-center w-full"
+                >ログインページ</h1>
+
                 <Label
                     className="text-sm font-medium text-gray-700 block mb-1"
                     >メールアドレス
