@@ -18,6 +18,7 @@ const PdcaListPage = () => {
     const [editDo, setEditDo] = useState("");
     const [editCheck, setEditCheck] = useState("");
     const [editAction, setEditAction] = useState("");
+    const [userRole, setUserRole] = useState("");
 
     const navigate = useNavigate();
 
@@ -37,6 +38,13 @@ const PdcaListPage = () => {
     const hanldeGoAdmin = () => {
         navigate("/admin");
     }
+
+    useEffect(() => {
+        const role = localStorage.getItem("userRole");
+        if (role) {
+          setUserRole(role);
+        }
+      }, []);
 
 
     useEffect(() => {
@@ -131,25 +139,27 @@ const PdcaListPage = () => {
 
 
     return(
-        <div className="min-h-screen bg-green-50 p-6 overflow-y-auto">
-            <h1 className="text-3xl font-bold text-center text-green-600 mb-6">PDCA一覧（確認用）</h1>
+        <div className="min-h-screen bg-orange-50 p-6 overflow-y-auto">
+            <h1 className="text-3xl font-sans text-center text-stone-600 mb-6">記録一覧</h1>
 
-            <div className="flex gap-2">
+            <div className="flex justify-center items-center gap-2 sm:gap-8 bg-white p-4 rounded-xl shadow-md w-full max-w-md sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto font-sans mb-6">
             <Button
                 onClick={handleBackToTop}
-                className="mb-4 bg-gray-300 text-gray-800 hover:bg-gray-400 transition px-4 py-2 rounded"
-                >← 記録ページへ戻る
+                className="min-w-[100px] sm:min-w-[120px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-orange-400 hover:bg-orange-500 transition"
+                >記録ページ
             </Button>
 
+            {userRole === "管理者" && (
             <Button
                 onClick={hanldeGoAdmin}
-                className="mb-4 bg-yellow-500 text-white hover:bg-yellow-600 transition px-4 py-2 rounded"
+                className="min-w-[100px] sm:min-w-[120px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-orange-400 hover:bg-orange-500 transition"
                 >管理パネル
             </Button>
+            )}
 
             <Button
                 onClick={handleLogout}
-                className="mb-4 bg-red-500 text-white hover:bg-red-600 transition px-4 py-2 rounded"
+                className="min-w-[100px] sm:min-w-[120px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-gray-400 hover:bg-gray-500 transition"
                 >ログアウト
             </Button>
             </div>
@@ -158,19 +168,21 @@ const PdcaListPage = () => {
 
             <div className="flex justify-center items-center gap-4 mb-6">
             <Button 
-                onClick={handlePrevMonth}>前月
+                className="min-w-[70px] sm:min-w-[80px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-amber-200 hover:bg-amber-300 transition"
+                onClick={handlePrevMonth}>前月へ
             </Button>
 
-            <span className="text-xl font-semibold">{selectedMonth}</span>
+            <span className="text-xl text-stone-600 font-semibold">{selectedMonth}</span>
 
             <Button 
-                onClick={handleNextMonth}>次月
+                className="min-w-[70px] sm:min-w-[80px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-amber-200 hover:bg-amber-300 transition"
+                onClick={handleNextMonth}>次月へ
             </Button>
             </div>
 
             {filteredRecords.length === 0 ? (
                 <p
-                    className="text-center text-gray-500 mt-6"
+                    className="text-center text-stone-600 font-sans mt-6"
                 >まだ記録がありません</p>
             ) : (
                 filteredRecords.map((record,index) => (
@@ -178,61 +190,61 @@ const PdcaListPage = () => {
                         key={index}
                         className="border p-4 mb-4 rounded-xl bg-white shadow-md hover:bg-gray-50 transition">
 
-                    <p className="text-sm text-gray-700">
-                      <strong className="font-semibold">日付：</strong>
+                    <p className="text-sm text-stone-600 font-sans">
+                      <strong className="font-sans">日付：</strong>
                          {record.date}
                    </p>
 
              {/* Plan */}
-               <p className="text-sm text-gray-700 font-semibold">計画：</p>
+               <p className="text-sm text-stone-600 font-sans">P:今日は何をする予定ですか？</p>
                  {editingIndex === index ? (
                <textarea
-                   className="w-full p-2 border rounded mb-2"
+                   className="w-full h-32 sm:h-36 p-3 sm:p-4 border border-stone-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-600 font-sans text-sm sm:text-base transition"
                    value={editPlan}
                    onChange={(e) => setEditPlan(e.target.value)}/>
 
                ) : (
-               <p className="text-sm text-gray-700">{record.plan}</p>
+               <p className="text-sm text-stone-600 font-sans">{record.plan}</p>
                )}
 
             {/* Do */}
-              <p className="text-sm text-gray-700 font-semibold">実行：</p>
+              <p className="text-sm text-stone-600 font-sans">D:実際にどんなことをしましたか？</p>
               {editingIndex === index ? (
               <textarea
-                className="w-full p-2 border rounded mb-2"
+                className="w-full h-32 sm:h-36 p-3 sm:p-4 border border-stone-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-600 font-sans text-sm sm:text-base transition"
             value={editDo}
             onChange={(e) => setEditDo(e.target.value)}/>
           ) : (
-            <p className="text-sm text-gray-700">{record.doText}</p>
+            <p className="text-sm text-stone-600 font-sans">{record.doText}</p>
         )}
 
             {/* Check */}
-      <p className="text-sm text-gray-700 font-semibold">確認：</p>
+      <p className="text-sm text-stone-600 font-sans">C:うまくいった事、できなかったことはどんなことですか？</p>
       {editingIndex === index ? (
         <textarea
-          className="w-full p-2 border rounded mb-2"
+          className="w-full h-32 sm:h-36 p-3 sm:p-4 border border-stone-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-600 font-sans text-sm sm:text-base transition"
           value={editCheck}
           onChange={(e) => setEditCheck(e.target.value)}
         />
       ) : (
-        <p className="text-sm text-gray-700">{record.check}</p>
+        <p className="text-sm text-stone-600 font-sans">{record.check}</p>
       )}
 
       {/* Action */}
-      <p className="text-sm text-gray-700 font-semibold">改善：</p>
+      <p className="text-sm text-stone-600 font-sans">A:次はどのように実行しますか？</p>
       {editingIndex === index ? (
         <textarea
-          className="w-full p-2 border rounded mb-2"
+          className="w-full h-32 sm:h-36 p-3 sm:p-4 border border-stone-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-600 font-sans text-sm sm:text-base transition"
           value={editAction}
           onChange={(e) => setEditAction(e.target.value)}
         />
       ) : (
-        <p className="text-sm text-gray-700">{record.action}</p>
+        <p className="text-sm text-stone-600 font-sans">{record.action}</p>
       )}
 
-      {/* 通知 */}
+      {/* 通知 */}  
       <p
-        className={`mt-2 font-semibold ${
+        className={`mt-2 font-sans ${
           record.notify ? "text-green-500" : "text-gray-400"
         }`}
       >
@@ -245,30 +257,31 @@ const PdcaListPage = () => {
           <>
             <Button
               onClick={handleCancelEdit}
-              className="bg-gray-300 hover:bg-gray-400"
+              className="bg-gray-400 hover:bg-gray-500 font-sans text-stone-600 px-4 py-2 rounded-xl"
               >キャンセル
             </Button>
         
             <Button
               onClick={handleSaveEdit}
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              className="bg-orange-400 text-stone-600 hover:bg-orange-500 font-sans px-4 py-2 rounded-xl"
               >保存
             </Button>
 
           </>
         ) : (
 
-        <div>
+        <div
+            className="flex justify-center items-center gap-6 sm:gap-8 p-4  w-full max-w-md sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto font-sans mb-6">
           <Button
             onClick={() => handleEdit(index)}
-            className="bg-yellow-500 text-white hover:bg-yellow-600"
+            className="min-w-[70px] sm:min-w-[80px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-amber-200 hover:bg-amber-300 transition"
           >
             編集
           </Button>
 
           <Button
             onClick={() => handleDelete(index)}
-            className="bg-red-500 text-white hover:bg-red-600"
+            className="min-w-[70px] sm:min-w-[80px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-gray-400 hover:bg-gray-500 transition"
           >
             削除
           </Button>

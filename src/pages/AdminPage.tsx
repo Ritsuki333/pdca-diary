@@ -18,9 +18,38 @@ const AdminPage = () => {
 
     const [records, setRecords] = useState<PdcaRecord[]>([]);
     const [selectedUser, setSelectedUser] = useState("全て");
+    const [accounts, setAccounts] = useState<{ email: string }[]>([]);
+    const navigate = useNavigate();
+
+    const validEmails = accounts.map((acc) => acc.email);
 
     // ユーザーを取得
-    const uniqueUsers = Array.from(new Set(records.map(r => r.userEmail).filter(Boolean)));
+    const uniqueUsers = Array.from(
+        new Set(
+            records
+              .map((r) => r.userEmail)
+              .filter((email) => typeof email === "string" && email.trim() !== "" && validEmails.includes(email))
+          )
+        );
+
+        useEffect(() => {
+            const isLoggedIn = localStorage.getItem("isLoggedIn");
+            const userRole = localStorage.getItem("userRole");
+          
+            if (isLoggedIn !== "true" || userRole !== "管理者") {
+              navigate("/");
+            }
+          }, []);
+
+
+    // アカウントを取得 
+    useEffect(() => {
+        const savedAccounts = localStorage.getItem("accounts");
+        if (savedAccounts) {
+          const parsedAccounts = JSON.parse(savedAccounts);
+          setAccounts(parsedAccounts);
+        }
+      }, []);
 
     // 記録を取得
     useEffect(() => {
@@ -39,7 +68,6 @@ const AdminPage = () => {
         .filter((r) => r.date.startsWith(selectedMonth))                         // 表示月で絞り込み
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // 日付で新→旧に並び替え
 
-        const navigate = useNavigate();
 
         const handleBack = () => {
             navigate("/top");
@@ -90,18 +118,18 @@ const AdminPage = () => {
 
 
     return(
-      <div>
-        <h1 className="text-2xl font-bold text-center mb-6">管理者専用ページ</h1>
-        <div className="mb-4 flex justify-center gap-4">
+      <div className="min-h-screen bg-red-50 p-6 overflow-y-auto">
+        <h1 className="text-3xl font-sans text-center text-stone-600 mb-6">管理者専用</h1>
+        <div className="flex justify-center items-center gap-2 sm:gap-8 bg-white p-4 rounded-xl shadow-md w-full max-w-md sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto font-sans mb-6">
             <Button
                 onClick={handleBack}
-                className="mb-4 bg-gray-300 text-gray-800 hover:bg-gray-400 transition px-4 py-2 rounded" 
-                >← トップページへ戻る
+                className="min-w-[100px] sm:min-w-[120px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-orange-400 hover:bg-orange-500 transition" 
+                >記録ページ
             </Button>
 
             <Button
                 onClick={handleLogout}
-                className="mb-4 bg-red-500 text-white hover:bg-red-600 transition px-4 py-2 rounded"
+                className="min-w-[100px] sm:min-w-[120px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-gray-400 hover:bg-gray-500 transition"
                 >ログアウト
             </Button>
         </div>
@@ -109,7 +137,7 @@ const AdminPage = () => {
 
 
         <select
-            className="mb-4 p-2 border rounded"
+            className="mb-4 p-2 border rounded w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-orange-600"
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}>
 
@@ -120,37 +148,41 @@ const AdminPage = () => {
         </select>
 
         <div className="flex justify-center items-center gap-4 mb-6">
-            <Button onClick={handlePrevMonth}>前月</Button>
+            <Button 
+                className="min-w-[70px] sm:min-w-[80px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-amber-200 hover:bg-amber-300 transition"
+                onClick={handlePrevMonth}>前月へ</Button>
 
-            <span className="text-xl font-semibold">{selectedMonth}</span>
+            <span className="text-xl font-sans text-stone-600">{selectedMonth}</span>
 
-            <Button onClick={handleNextMonth}>次月</Button>
+            <Button 
+                className="min-w-[70px] sm:min-w-[80px] px-5 py-2 rounded-xl text-stone-600 font-sans text-xs sm:text-sm md:text-base bg-amber-200 hover:bg-amber-300 transition"
+                onClick={handleNextMonth}>次月へ</Button>
         </div>
 
         <div>
             {filteredRecords.length === 0 ? (
-                <p className="text-center text-gray-500 mt-6">記録はまだありません</p>
+                <p className="text-center text-stone-600 font-sans mt-6">記録はまだありません</p>
             ) : (
             filteredRecords.map((record, index) => (
                 <div
                     key={index}
                     className="border p-4 mb-4 rounded-xl bg-white shadow-md hover:bg-gray-50 transition">
-                        <p className="text-sm text-gray-500 mb-2">👤 ユーザー：{record.userEmail}</p>
+                        <p className="text-sm text-stone-600 font-sans mb-2">👤 ユーザー：{record.userEmail}</p>
 
-                        <p className="text-lg font-bold text-green-700">📅 {record.date}</p>
+                        <p className="text-lg font-bold text-stone-600 font-sans">📅 {record.date}</p>
 
                     {/* 各PDCA項目 */}
-                        <p className="mt-2 font-semibold text-gray-800">計画：</p>
-                        <p className="text-sm text-gray-700">{record.plan}</p>
+                        <p className="mt-2 font-semibold text-stone-600 font-sans">計画：</p>
+                        <p className="text-sm text-stone-600 font-sans">{record.plan}</p>
 
-                        <p className="mt-2 font-semibold text-gray-800">実行：</p>
-                        <p className="text-sm text-gray-700">{record.doText}</p>
+                        <p className="mt-2 font-semibold text-stone-600 font-sans">実行：</p>
+                        <p className="text-sm text-stone-600 font-sans">{record.doText}</p>
 
-                        <p className="mt-2 font-semibold text-gray-800">確認：</p>
-                        <p className="text-sm text-gray-700">{record.check}</p>
+                        <p className="mt-2 font-semibold text-stone-600 font-sans">確認：</p>
+                        <p className="text-sm text-stone-600 font-sans">{record.check}</p>
 
-                        <p className="mt-2 font-semibold text-gray-800">改善：</p>
-                        <p className="text-sm text-gray-700">{record.action}</p>
+                        <p className="mt-2 font-semibold text-stone-600 font-sans">改善：</p>
+                        <p className="text-sm text-stone-600 font-sans">{record.action}</p>
                     <p className={`font-semibold ${record.notify ? "text-green-500" : "text-gray-400"}`}>
                         {record.notify ? `🔔 通知: ON（${record.notifyTime}）` : "🔕 通知: OFF"}
                     </p>
