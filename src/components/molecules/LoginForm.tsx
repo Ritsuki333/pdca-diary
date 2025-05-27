@@ -3,6 +3,7 @@ import { useState } from "react";
 import Label from "../atoms/Label";
 import Input from "../atoms/Input";
 import Button from "../atoms/Button";
+import * as bcrypt from "bcryptjs";
 
 
 
@@ -61,10 +62,14 @@ const isIdValid = inputId !== "" && inputId.length <= 50;
         if (hasError) return;
       
         const accounts = JSON.parse(localStorage.getItem("accounts") || "[]");
+
+
       
         const matched = accounts.find(
           (acc: any) =>
-            acc.email === inputId && acc.password === password && acc.active
+            acc.email === inputId &&
+          bcrypt.compareSync(password, acc.password) &&
+          acc.active
         );
       
         if (!matched) {

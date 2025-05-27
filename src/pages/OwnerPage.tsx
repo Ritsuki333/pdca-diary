@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import Button from "../components/atoms/Button";
 import Input from "../components/atoms/Input";
 import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
 
 
 const OwnerPage = () => {
@@ -10,6 +11,8 @@ const OwnerPage = () => {
     const [newPassword, setNewPassword] = useState<string>("")
     const [newRole, setNewRole] = useState<string>("ユーザー")
     const [accounts, setAccounts] = useState<AccountType[]>([]);
+
+    
     
 
     type AccountType = {
@@ -34,7 +37,7 @@ const OwnerPage = () => {
         const userRole = localStorage.getItem("userRole");
       
         // ローカルストレージ上のオーナーの存在確認（初回ロード専用）
-        const savedAccounts = JSON.parse(localStorage.getItem("accounts") || "[]");
+        const savedAccounts: AccountType[] = JSON.parse(localStorage.getItem("accounts") || "[]");
         const ownerExists = savedAccounts.some((acc: AccountType) => acc.role === "オーナー");
       
         if (!ownerExists) return;
@@ -151,14 +154,14 @@ const OwnerPage = () => {
             return;
         }
 
-
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
     
 
         const newAccount: AccountType = {
             name: newName,
             email: newId,
-            password: newPassword,
-            role: newRole === "管理者" ? "管理者" : "ユーザー",  // 型を「管理者」か「ユーザー」に限定
+            password: hashedPassword,
+            role: newRole as "ユーザー" | "管理者" | "オーナー",  // 型を「管理者」か「ユーザー」に限定
             active: true,
           };
 
